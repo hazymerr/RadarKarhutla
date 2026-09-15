@@ -27,6 +27,15 @@ export interface FormInput {
   kondisi_vegetasi?: string;
   ketersediaan_alat_anggaran?: string;
   catatan_tambahan?: string;
+
+  // Deteksi Geolokasi Pengguna
+  userCoordinates?: {
+    latitude: number;
+    longitude: number;
+    accuracy?: number;
+    displayName?: string;
+    timestamp?: number;
+  };
 }
 
 export interface RekomendasiPetani {
@@ -65,4 +74,33 @@ export interface PresetSkenario {
   wilayah: string;
   deskripsi: string;
   data: FormInput;
+}
+
+export interface GroundingWebSource {
+  title: string;
+  uri: string;
+}
+
+export interface GroundingMapSource {
+  title: string;
+  uri: string;
+  address?: string;
+}
+
+export interface SearchGroundingResult {
+  summary: string;
+  sources: GroundingWebSource[];
+  queryTime: string;
+  location: string;
+}
+
+export interface MapsGroundingResult {
+  summary: string;
+  places: GroundingMapSource[];
+  queryTime: string;
+  location: string;
+  coordinates?: {
+    latitude: number;
+    longitude: number;
+  };
 }

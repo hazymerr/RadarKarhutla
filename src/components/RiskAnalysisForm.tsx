@@ -19,6 +19,9 @@ import {
   Sliders,
   ChevronDown,
   ChevronUp,
+  Navigation,
+  Loader2,
+  CheckCircle2,
 } from 'lucide-react';
 
 interface RiskAnalysisFormProps {
@@ -35,6 +38,68 @@ export const RiskAnalysisForm: React.FC<RiskAnalysisFormProps> = ({
   isLoading,
 }) => {
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [isDetectingGps, setIsDetectingGps] = useState(false);
+  const [gpsMessage, setGpsMessage] = useState<string | null>(null);
+
+  const handleDetectGps = () => {
+    if (!navigator.geolocation) {
+      setGpsMessage('Geolokasi tidak didukung oleh browser Anda.');
+      return;
+    }
+
+    setIsDetectingGps(true);
+    setGpsMessage('Mencari koordinat GPS...');
+
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        const accuracy = pos.coords.accuracy || 20;
+
+        let detectedName = `GPS (${lat.toFixed(4)}°, ${lng.toFixed(4)}°)`;
+        try {
+          const res = await fetch(
+            `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=id`
+          );
+          if (res.ok) {
+            const data = await res.json();
+            const locality = data.locality || data.city || data.principalSubdivision || '';
+            const subLoc = data.localityInfo?.administrative?.[3]?.name || '';
+            if (locality) {
+              detectedName = subLoc ? `${subLoc}, ${locality}` : locality;
+            }
+          }
+        } catch {
+          // fallback
+        }
+
+        onChange({
+          lokasi: detectedName,
+          userCoordinates: {
+            latitude: lat,
+            longitude: lng,
+            accuracy,
+            displayName: detectedName,
+            timestamp: Date.now(),
+          },
+        });
+
+        setIsDetectingGps(false);
+        setGpsMessage(`Lokasi terdeteksi: ${detectedName}`);
+        setTimeout(() => setGpsMessage(null), 4000);
+      },
+      (err) => {
+        setIsDetectingGps(false);
+        setGpsMessage(
+          err.code === 1
+            ? 'Izin lokasi ditolak di peramban.'
+            : 'Sinyal GPS tidak dapat ditemukan.'
+        );
+        setTimeout(() => setGpsMessage(null), 4000);
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 }
+    );
+  };
 
   return (
     <form
@@ -61,17 +126,51 @@ export const RiskAnalysisForm: React.FC<RiskAnalysisFormProps> = ({
       <div className="space-y-4">
         {/* Lokasi */}
         <div>
-          <label className="block text-xs font-semibold text-stone-700 mb-1">
-            Lokasi Pengamatan (Desa / Kecamatan / Kabupaten)
-          </label>
-          <input
-            type="text"
-            value={formData.lokasi}
-            onChange={(e) => onChange({ lokasi: e.target.value })}
-            placeholder="Contoh: Desa Sepahat, Bengkalis, Riau"
-            className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 placeholder-stone-400 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100 transition-all"
-            required
-          />
+          <div className="flex items-center justify-between mb-1">
+            <label className="block text-xs font-semibold text-stone-700">
+              Lokasi Pengamatan (Desa / Kecamatan / Kabupaten)
+            </label>
+            {formData.userCoordinates && (
+              <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200 flex items-center gap-1">
+                <CheckCircle2 className="w-3 h-3" />
+                GPS Terkunci
+              </span>
+            )}
+          </div>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={formData.lokasi}
+              onChange={(e) => onChange({ lokasi: e.target.value })}
+              placeholder="Contoh: Desa Sepahat, Bengkalis, Riau"
+              className="flex-1 px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 placeholder-stone-400 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100 transition-all"
+              required
+            />
+            <button
+              type="button"
+              onClick={handleDetectGps}
+              disabled={isDetectingGps}
+              className="px-3 py-2 bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-700 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50 shrink-0"
+              title="Deteksi lokasi koordinat GPS Anda saat ini"
+            >
+              {isDetectingGps ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-blue-600" />
+                  <span className="hidden sm:inline">Mencari...</span>
+                </>
+              ) : (
+                <>
+                  <Navigation className="w-3.5 h-3.5 text-blue-600" />
+                  <span>GPS</span>
+                </>
+              )}
+            </button>
+          </div>
+          {gpsMessage && (
+            <p className="mt-1 text-[11px] text-blue-600 font-medium animate-fadeIn">
+              {gpsMessage}
+            </p>
+          )}
         </div>
 
         {/* 2-Column: Musim & Jenis Lahan */}
