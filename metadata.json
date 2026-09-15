@@ -1,0 +1,6 @@
+{
+  "name": "RadarKarhutla",
+  "description": "Platform analisis risiko kebakaran hutan & lahan (karhutla) 7 hari dan penasihat pertanian Pembukaan Lahan Tanpa Bakar (PLTB).",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
