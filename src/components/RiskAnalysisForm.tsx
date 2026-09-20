@@ -14,14 +14,15 @@ import {
   Flame,
   Trees,
   Tractor,
-  Activity,
-  Sparkles,
   Sliders,
   ChevronDown,
   ChevronUp,
   Navigation,
   Loader2,
   CheckCircle2,
+  MapPin,
+  Droplets,
+  Sparkles,
 } from 'lucide-react';
 
 interface RiskAnalysisFormProps {
@@ -29,6 +30,7 @@ interface RiskAnalysisFormProps {
   onChange: (updated: Partial<FormInput>) => void;
   onSubmit: (e: React.FormEvent) => void;
   isLoading: boolean;
+  isModal?: boolean;
 }
 
 export const RiskAnalysisForm: React.FC<RiskAnalysisFormProps> = ({
@@ -36,6 +38,7 @@ export const RiskAnalysisForm: React.FC<RiskAnalysisFormProps> = ({
   onChange,
   onSubmit,
   isLoading,
+  isModal = false,
 }) => {
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [isDetectingGps, setIsDetectingGps] = useState(false);
@@ -101,272 +104,309 @@ export const RiskAnalysisForm: React.FC<RiskAnalysisFormProps> = ({
     );
   };
 
-  return (
-    <form
-      onSubmit={onSubmit}
-      className="bg-white border border-stone-200 rounded-2xl p-5 sm:p-6 shadow-xs space-y-5"
-    >
-      {/* Form Header */}
-      <div className="flex items-center justify-between border-b border-stone-100 pb-3">
-        <div>
-          <h2 className="text-base font-bold text-stone-900 flex items-center gap-2">
-            <Sliders className="w-4 h-4 text-orange-600" />
-            Parameter Lapangan
-          </h2>
-          <p className="text-xs text-stone-500">
-            Sesuaikan kondisi aktual lokasi dan rencana pengolahan lahan
-          </p>
-        </div>
-        <span className="text-[11px] font-semibold text-orange-700 bg-orange-50 px-2.5 py-1 rounded-full border border-orange-200">
-          Input Sederhana
-        </span>
-      </div>
+  const containerClass = isModal
+    ? 'space-y-5'
+    : 'space-y-6';
 
-      {/* Primary Essential Inputs */}
-      <div className="space-y-4">
-        {/* Lokasi */}
-        <div>
-          <div className="flex items-center justify-between mb-1">
-            <label className="block text-xs font-semibold text-stone-700">
-              Lokasi Pengamatan (Desa / Kecamatan / Kabupaten)
-            </label>
-            {formData.userCoordinates && (
-              <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200 flex items-center gap-1">
-                <CheckCircle2 className="w-3 h-3" />
-                GPS Terkunci
-              </span>
-            )}
-          </div>
-          <div className="flex gap-2">
+  return (
+    <form onSubmit={onSubmit} className={containerClass}>
+      
+      {/* 1. LOKASI PENGAMATAN */}
+      <div className="bg-slate-50/60 dark:bg-[#152238] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-4 sm:p-5 space-y-2.5 transition-colors">
+        <div className="flex items-center justify-between">
+          <label className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+            <MapPin className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
+            <span>Lokasi Pengamatan Wilayah</span>
+          </label>
+          {formData.userCoordinates && (
+            <span className="text-[10px] font-bold text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/40 px-2.5 py-0.5 rounded-full border border-blue-200 dark:border-blue-900/40 flex items-center gap-1">
+              <CheckCircle2 className="w-3 h-3 text-blue-600 dark:text-blue-400" />
+              GPS Aktif
+            </span>
+          )}
+        </div>
+
+        <div className="flex gap-2">
+          <div className="relative flex-1">
             <input
               type="text"
               value={formData.lokasi}
               onChange={(e) => onChange({ lokasi: e.target.value })}
               placeholder="Contoh: Desa Sepahat, Bengkalis, Riau"
-              className="flex-1 px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 placeholder-stone-400 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100 transition-all"
+              className="w-full px-3.5 py-2.5 bg-white dark:bg-[#0d1629] border border-slate-200 dark:border-slate-700/60 rounded-xl text-xs sm:text-sm text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/30 transition-all"
               required
             />
-            <button
-              type="button"
-              onClick={handleDetectGps}
-              disabled={isDetectingGps}
-              className="px-3 py-2 bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-700 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50 shrink-0"
-              title="Deteksi lokasi koordinat GPS Anda saat ini"
-            >
-              {isDetectingGps ? (
-                <>
-                  <Loader2 className="w-3.5 h-3.5 animate-spin text-blue-600" />
-                  <span className="hidden sm:inline">Mencari...</span>
-                </>
-              ) : (
-                <>
-                  <Navigation className="w-3.5 h-3.5 text-blue-600" />
-                  <span>GPS</span>
-                </>
-              )}
-            </button>
           </div>
-          {gpsMessage && (
-            <p className="mt-1 text-[11px] text-blue-600 font-medium animate-fadeIn">
-              {gpsMessage}
-            </p>
-          )}
+          <button
+            type="button"
+            onClick={handleDetectGps}
+            disabled={isDetectingGps}
+            className="px-4 py-2.5 bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/40 dark:hover:bg-blue-900/50 border border-blue-200 dark:border-blue-900/40 text-blue-700 dark:text-blue-300 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50 shrink-0 shadow-2xs"
+            title="Deteksi lokasi koordinat GPS Anda saat ini"
+          >
+            {isDetectingGps ? (
+              <>
+                <Loader2 className="w-3.5 h-3.5 animate-spin text-blue-600 dark:text-blue-400" />
+                <span className="hidden sm:inline">Mendeteksi...</span>
+              </>
+            ) : (
+              <>
+                <Navigation className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+                <span>GPS Otomatis</span>
+              </>
+            )}
+          </button>
         </div>
 
-        {/* 2-Column: Musim & Jenis Lahan */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label className="block text-xs font-semibold text-stone-700 mb-1">
+        {gpsMessage && (
+          <p className="text-[11px] text-blue-600 dark:text-blue-400 font-medium animate-fadeIn">
+            {gpsMessage}
+          </p>
+        )}
+      </div>
+
+      {/* 2. KONDISI IKLIM & CUACA */}
+      <div className="space-y-3">
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 flex items-center gap-1.5">
+            <CloudRain className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+            Parameter Iklim & Cuaca
+          </span>
+          <div className="h-px flex-1 bg-slate-100 dark:bg-slate-800" />
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+          {/* Musim */}
+          <div className="space-y-1.5">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
               Musim Saat Ini
             </label>
             <select
               value={formData.musim}
               onChange={(e) => onChange({ musim: e.target.value as Musim })}
-              className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+              className="w-full px-3 py-2.5 bg-slate-50/70 hover:bg-slate-50 dark:bg-[#0d1629] dark:hover:bg-[#111c33] focus:bg-white dark:focus:bg-[#0d1629] border border-slate-200 dark:border-slate-700/60 rounded-xl text-xs sm:text-sm text-slate-800 dark:text-slate-200 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/30 transition-all font-medium"
             >
-              <option value="kemarau">Kemarau (Kering / Rawan Api)</option>
+              <option value="kemarau">Kemarau (Kering & Rawan)</option>
               <option value="pancaroba">Pancaroba (Peralihan)</option>
-              <option value="hujan">Penghujan (Basah / Lembap)</option>
+              <option value="hujan">Penghujan (Basah & Lembap)</option>
             </select>
           </div>
 
-          <div>
-            <label className="block text-xs font-semibold text-stone-700 mb-1 flex items-center gap-1">
-              <Layers className="w-3.5 h-3.5 text-orange-600" />
-              Jenis Lahan
-            </label>
-            <select
-              value={formData.jenis_lahan}
-              onChange={(e) => onChange({ jenis_lahan: e.target.value as JenisLahan })}
-              className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100 font-medium"
-            >
-              <option value="gambut">Lahan Gambut (Rawan Api Bawah Tanah)</option>
-              <option value="mineral">Tanah Mineral Biasa</option>
-              <option value="semak">Semak Belukar / Alang-alang</option>
-              <option value="bekas_kebun">Bekas Kebun / Ladang Tua</option>
-            </select>
-          </div>
-        </div>
-
-        {/* 2-Column: Curah Hujan & Kecepatan Angin */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label className="block text-xs font-semibold text-stone-700 mb-1 flex items-center gap-1">
-              <CloudRain className="w-3.5 h-3.5 text-blue-500" />
-              Kondisi Curah Hujan
+          {/* Curah Hujan */}
+          <div className="space-y-1.5">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
+              Curah Hujan
             </label>
             <select
               value={formData.curah_hujan}
               onChange={(e) => onChange({ curah_hujan: e.target.value as CurahHujan })}
-              className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+              className="w-full px-3 py-2.5 bg-slate-50/70 hover:bg-slate-50 dark:bg-[#0d1629] dark:hover:bg-[#111c33] focus:bg-white dark:focus:bg-[#0d1629] border border-slate-200 dark:border-slate-700/60 rounded-xl text-xs sm:text-sm text-slate-800 dark:text-slate-200 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/30 transition-all font-medium"
             >
-              <option value="kering">Kering / Tidak Hujan (&gt;7 hari)</option>
-              <option value="sedikit">Sedikit / Gerimis Sporadis</option>
-              <option value="sedang">Sedang (Ada hujan selang-seling)</option>
-              <option value="lebat">Lebat (Hampir setiap hari)</option>
+              <option value="sangat_rendah">Sangat Rendah (&lt;5 mm / Kering)</option>
+              <option value="rendah">Rendah (5 - 15 mm)</option>
+              <option value="sedang">Sedang (15 - 30 mm)</option>
+              <option value="tinggi">Tinggi (&gt;30 mm / Basah)</option>
             </select>
           </div>
 
-          <div>
-            <label className="block text-xs font-semibold text-stone-700 mb-1 flex items-center gap-1">
-              <Wind className="w-3.5 h-3.5 text-cyan-600" />
-              Kecepatan Angin
+          {/* Kecepatan Angin */}
+          <div className="space-y-1.5">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1">
+              <Wind className="w-3.5 h-3.5 text-blue-500 dark:text-blue-400" />
+              <span>Kecepatan Angin</span>
             </label>
             <select
               value={formData.kecepatan_angin}
               onChange={(e) => onChange({ kecepatan_angin: e.target.value as KecepatanAngin })}
-              className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+              className="w-full px-3 py-2.5 bg-slate-50/70 hover:bg-slate-50 dark:bg-[#0d1629] dark:hover:bg-[#111c33] focus:bg-white dark:focus:bg-[#0d1629] border border-slate-200 dark:border-slate-700/60 rounded-xl text-xs sm:text-sm text-slate-800 dark:text-slate-200 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/30 transition-all font-medium"
             >
-              <option value="tenang">Tenang (&lt; 10 km/jam)</option>
+              <option value="rendah">Tenang (&lt; 10 km/jam)</option>
               <option value="sedang">Sedang (10 - 25 km/jam)</option>
-              <option value="kencang">Kencang (&gt; 25 km/jam - bahaya)</option>
-            </select>
-          </div>
-        </div>
-
-        {/* Luas Lahan & Anggaran */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label className="block text-xs font-semibold text-stone-700 mb-1 flex items-center gap-1">
-              <Trees className="w-3.5 h-3.5 text-emerald-600" />
-              Luas Lahan: <span className="font-bold text-stone-900">{formData.luas_lahan_ha} Ha</span>
-            </label>
-            <div className="flex items-center gap-2">
-              <input
-                type="range"
-                min="0.25"
-                max="20"
-                step="0.25"
-                value={formData.luas_lahan_ha}
-                onChange={(e) => onChange({ luas_lahan_ha: parseFloat(e.target.value) || 1 })}
-                className="w-full accent-orange-600 cursor-pointer"
-              />
-              <span className="text-xs font-semibold text-stone-600 min-w-[45px] text-right">
-                {formData.luas_lahan_ha} Ha
-              </span>
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-stone-700 mb-1 flex items-center gap-1">
-              <Tractor className="w-3.5 h-3.5 text-amber-600" />
-              Ketersediaan Alat Petani
-            </label>
-            <select
-              value={formData.ketersediaan_alat}
-              onChange={(e) => onChange({ ketersediaan_alat: e.target.value as any })}
-              className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
-            >
-              <option value="manual_saja">Manual (Parang, Cangkul, Sabit)</option>
-              <option value="ada_mesin_kecil">Mesin Pencacah / Chainsaw Kecil</option>
-              <option value="akses_alat_berat">Akses Traktor / Eskavator Mini</option>
+              <option value="tinggi">Kencang (&gt; 25 km/jam - Waspada)</option>
             </select>
           </div>
         </div>
       </div>
 
-      {/* Advanced Toggle for Kelembapan, Hotspot, Jarak Api, Anggaran */}
+      {/* 3. KARAKTERISTIK WILAYAH & LAHAN */}
+      <div className="space-y-3">
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 flex items-center gap-1.5">
+            <Layers className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+            Karakteristik Wilayah & Tutupan Lahan
+          </span>
+          <div className="h-px flex-1 bg-slate-100 dark:bg-slate-800" />
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* Jenis Lahan */}
+          <div className="space-y-1.5">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
+              Tipe & Lapisan Tanah
+            </label>
+            <select
+              value={formData.jenis_lahan}
+              onChange={(e) => onChange({ jenis_lahan: e.target.value as JenisLahan })}
+              className="w-full px-3 py-2.5 bg-slate-50/70 hover:bg-slate-50 dark:bg-[#0d1629] dark:hover:bg-[#111c33] focus:bg-white dark:focus:bg-[#0d1629] border border-slate-200 dark:border-slate-700/60 rounded-xl text-xs sm:text-sm text-slate-800 dark:text-slate-200 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/30 transition-all font-medium"
+            >
+              <option value="gambut">Lahan Gambut (Rawan Api Bawah Permukaan)</option>
+              <option value="mineral">Tanah Mineral Biasa</option>
+              <option value="semak">Semak Belukar / Alang-alang Kering</option>
+              <option value="bekas_kebun">Bekas Kebun / Ladang Tua</option>
+            </select>
+          </div>
+
+          {/* Luas Area Pantauan */}
+          <div className="space-y-1.5 bg-slate-50/60 dark:bg-[#152238] border border-slate-200/80 dark:border-slate-800 rounded-xl p-3">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1">
+                <Trees className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+                <span>Luas Area Pantauan</span>
+              </label>
+              <span className="text-xs font-bold text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/40 px-2 py-0.5 rounded-md border border-blue-200 dark:border-blue-900/40">
+                {formData.luas_lahan_ha} Ha
+              </span>
+            </div>
+            <input
+              type="range"
+              min="0.25"
+              max="20"
+              step="0.25"
+              value={formData.luas_lahan_ha}
+              onChange={(e) => onChange({ luas_lahan_ha: parseFloat(e.target.value) || 1 })}
+              className="w-full accent-blue-600 cursor-pointer h-1.5 bg-slate-200 dark:bg-slate-700 rounded-lg"
+            />
+          </div>
+        </div>
+
+        {/* Kelembapan Udara & Vegetasi */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="space-y-1.5 bg-slate-50/60 dark:bg-[#152238] border border-slate-200/80 dark:border-slate-800 rounded-xl p-3">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1">
+                <Droplets className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+                <span>Kelembapan Udara (RH)</span>
+              </label>
+              <span className="text-xs font-bold text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/40 px-2 py-0.5 rounded-md border border-blue-200 dark:border-blue-900/40">
+                {formData.kelembapan_udara}%
+              </span>
+            </div>
+            <input
+              type="range"
+              min="15"
+              max="95"
+              step="1"
+              value={formData.kelembapan_udara}
+              onChange={(e) => onChange({ kelembapan_udara: parseInt(e.target.value) || 50 })}
+              className="w-full accent-blue-600 cursor-pointer h-1.5 bg-slate-200 dark:bg-slate-700 rounded-lg"
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
+              Kondisi Vegetasi / Serasah Kering
+            </label>
+            <input
+              type="text"
+              value={formData.kondisi_vegetasi || ''}
+              onChange={(e) => onChange({ kondisi_vegetasi: e.target.value })}
+              placeholder="Contoh: Semak pakis kawat dan serasah kering tebal"
+              className="w-full px-3 py-2.5 bg-slate-50/70 hover:bg-slate-50 dark:bg-[#0d1629] dark:hover:bg-[#111c33] focus:bg-white dark:focus:bg-[#0d1629] border border-slate-200 dark:border-slate-700/60 rounded-xl text-xs sm:text-sm text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/30 transition-all"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* 4. PARAMETER LANJUTAN (COLLAPSIBLE, CLEAN & BLUE) */}
       <div className="pt-1">
         <button
           type="button"
           onClick={() => setShowAdvanced(!showAdvanced)}
-          className="flex items-center justify-between w-full py-2 px-3 rounded-xl bg-stone-50 hover:bg-stone-100 text-xs font-semibold text-stone-600 border border-stone-200 transition-colors cursor-pointer"
+          className="flex items-center justify-between w-full py-2.5 px-4 rounded-xl bg-blue-50/60 hover:bg-blue-50 dark:bg-[#152238] dark:hover:bg-[#1b2b47] text-xs font-semibold text-blue-700 dark:text-blue-300 border border-blue-100 dark:border-slate-800 transition-all cursor-pointer"
         >
-          <span className="flex items-center gap-1.5">
-            <Activity className="w-3.5 h-3.5 text-stone-500" />
-            Parameter Tambahan (Titik Panas & Kelembapan Tanah)
+          <span className="flex items-center gap-2">
+            <Sliders className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+            <span>Parameter Tambahan (Kelembapan Tanah, Titik Panas & Alat)</span>
           </span>
           {showAdvanced ? (
-            <ChevronUp className="w-4 h-4 text-stone-500" />
+            <ChevronUp className="w-4 h-4 text-blue-600 dark:text-blue-400" />
           ) : (
-            <ChevronDown className="w-4 h-4 text-stone-500" />
+            <ChevronDown className="w-4 h-4 text-blue-600 dark:text-blue-400" />
           )}
         </button>
 
         {showAdvanced && (
-          <div className="mt-3 p-4 rounded-xl bg-stone-50/70 border border-stone-200 space-y-3.5 animate-fadeIn text-xs">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label className="block font-semibold text-stone-700 mb-1">
-                  Kelembapan Permukaan Tanah
+          <div className="mt-3 p-4 sm:p-5 rounded-2xl bg-slate-50/80 dark:bg-[#0d1629] border border-slate-200 dark:border-slate-800 space-y-4 animate-fadeIn text-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <label className="block font-semibold text-slate-700 dark:text-slate-300">
+                  Kelembapan Permukaan Gambut / Tanah
                 </label>
                 <select
                   value={formData.kelembapan_tanah}
                   onChange={(e) => onChange({ kelembapan_tanah: e.target.value as KelembapanTanah })}
-                  className="w-full px-3 py-2 bg-white border border-stone-200 rounded-lg text-xs text-stone-900"
+                  className="w-full px-3 py-2 bg-white dark:bg-[#152238] border border-slate-200 dark:border-slate-700/60 rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/30 font-medium"
                 >
-                  <option value="sangat_kering">Sangat Kering (Retak / Serasah rapuh)</option>
-                  <option value="kering">Kering</option>
-                  <option value="lembab">Lembap</option>
+                  <option value="kering_kritis">Kering Kritis (Muka air &lt;-40cm, retak)</option>
+                  <option value="kering_sedang">Kering Sedang</option>
+                  <option value="lembab">Lembap Normal</option>
                   <option value="basah">Basah / Tergenang</option>
                 </select>
               </div>
 
-              <div>
-                <label className="block font-semibold text-stone-700 mb-1">
-                  Kemampuan Anggaran Petani
+              <div className="space-y-1.5">
+                <label className="block font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1">
+                  <Tractor className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+                  <span>Kapasitas Penanganan & Peralatan di Lokasi</span>
                 </label>
-                <select
-                  value={formData.anggaran_petani}
-                  onChange={(e) => onChange({ anggaran_petani: e.target.value as any })}
-                  className="w-full px-3 py-2 bg-white border border-stone-200 rounded-lg text-xs text-stone-900"
-                >
-                  <option value="sangat_terbatas">Sangat Terbatas (Swadaya Mandiri)</option>
-                  <option value="sedang">Sedang (Bisa beli dekomposer/sewa)</option>
-                  <option value="cukup">Cukup (Bisa pengolahan mekanis)</option>
-                </select>
+                <input
+                  type="text"
+                  value={formData.ketersediaan_alat_anggaran || ''}
+                  onChange={(e) => onChange({ ketersediaan_alat_anggaran: e.target.value })}
+                  placeholder="Contoh: Pompa air apung, parang, regu MPA/Damkar desa, swadaya"
+                  className="w-full px-3 py-2 bg-white dark:bg-[#152238] border border-slate-200 dark:border-slate-700/60 rounded-xl text-xs text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/30"
+                />
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-              <div>
-                <label className="block font-semibold text-stone-700 mb-1 flex items-center justify-between">
-                  <span>Titik Panas (Hotspot 30 hari)</span>
-                  <span className="font-bold text-orange-600">{formData.riwayat_titik_panas_30hari} titik</span>
-                </label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+              <div className="space-y-1.5 bg-white dark:bg-[#152238] border border-slate-200 dark:border-slate-800 rounded-xl p-3">
+                <div className="flex items-center justify-between">
+                  <label className="font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1">
+                    <Flame className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+                    <span>Hotspot Terpantau (Radius 10 km)</span>
+                  </label>
+                  <span className="font-bold text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/40 px-2 py-0.5 rounded-md border border-blue-200 dark:border-blue-900/40">
+                    {formData.histori_titik_panas_10km} titik
+                  </span>
+                </div>
                 <input
                   type="range"
                   min="0"
-                  max="30"
-                  value={formData.riwayat_titik_panas_30hari}
-                  onChange={(e) => onChange({ riwayat_titik_panas_30hari: parseInt(e.target.value) || 0 })}
-                  className="w-full accent-orange-600 cursor-pointer"
+                  max="25"
+                  value={formData.histori_titik_panas_10km}
+                  onChange={(e) => onChange({ histori_titik_panas_10km: parseInt(e.target.value) || 0 })}
+                  className="w-full accent-blue-600 cursor-pointer h-1.5 bg-slate-200 dark:bg-slate-700 rounded-lg"
                 />
               </div>
 
-              <div>
-                <label className="block font-semibold text-stone-700 mb-1 flex items-center justify-between">
-                  <span>Jarak Sumber Api Terdekat</span>
-                  <span className="font-bold text-orange-600">{formData.jarak_sumber_api_km} km</span>
-                </label>
+              <div className="space-y-1.5 bg-white dark:bg-[#152238] border border-slate-200 dark:border-slate-800 rounded-xl p-3">
+                <div className="flex items-center justify-between">
+                  <label className="font-semibold text-slate-700 dark:text-slate-300">
+                    Jarak Sumber Api Terdekat
+                  </label>
+                  <span className="font-bold text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/40 px-2 py-0.5 rounded-md border border-blue-200 dark:border-blue-900/40">
+                    {formData.jarak_sumber_api_km !== null ? `${formData.jarak_sumber_api_km} km` : 'Aman'}
+                  </span>
+                </div>
                 <input
                   type="range"
                   min="0.5"
-                  max="30"
+                  max="20"
                   step="0.5"
-                  value={formData.jarak_sumber_api_km}
+                  value={formData.jarak_sumber_api_km || 5}
                   onChange={(e) => onChange({ jarak_sumber_api_km: parseFloat(e.target.value) || 1 })}
-                  className="w-full accent-orange-600 cursor-pointer"
+                  className="w-full accent-blue-600 cursor-pointer h-1.5 bg-slate-200 dark:bg-slate-700 rounded-lg"
                 />
               </div>
             </div>
@@ -374,21 +414,21 @@ export const RiskAnalysisForm: React.FC<RiskAnalysisFormProps> = ({
         )}
       </div>
 
-      {/* Prominent AI Action Button */}
+      {/* 5. ACTION SUBMIT BUTTON (CONSISTENT BLUE GRADIENT) */}
       <button
         type="submit"
         disabled={isLoading}
-        className="w-full py-3.5 px-6 rounded-xl font-bold text-white text-sm bg-gradient-to-r from-orange-600 via-amber-600 to-orange-600 hover:from-orange-700 hover:to-amber-700 transition-all duration-200 shadow-md hover:shadow-lg shadow-orange-500/25 flex items-center justify-center gap-2.5 disabled:opacity-60 cursor-pointer active:scale-[0.98]"
+        className="w-full py-3.5 px-6 rounded-xl font-bold text-white text-xs sm:text-sm bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-md shadow-blue-500/20 hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-60 cursor-pointer active:scale-[0.99]"
       >
         {isLoading ? (
           <>
-            <div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-            <span>AI Sedang Menganalisis Kondisi 7 Hari...</span>
+            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            <span>Memproses Analisis Parameter...</span>
           </>
         ) : (
           <>
-            <Sparkles className="w-4 h-4 text-amber-200 animate-pulse" />
-            <span>Jalankan Analisis Risiko AI & Solusi PLTB</span>
+            <Sparkles className="w-4 h-4 text-sky-200 animate-pulse" />
+            <span>Simpan Parameter & Jalankan Analisis AI</span>
           </>
         )}
       </button>

@@ -6,7 +6,8 @@ import {
   CloudSun, 
   Flame, 
   CloudRain, 
-  Sprout
+  Sprout,
+  CloudFog
 } from 'lucide-react';
 import { HasilAnalisis } from '../types.ts';
 
@@ -43,25 +44,25 @@ export const WeeklyForecastSidebar: React.FC<WeeklyForecastSidebarProps> = ({
   };
 
   return (
-    <aside className="hidden 2xl:flex 2xl:w-80 bg-white border-l border-slate-100 p-6 flex-col justify-between shrink-0 space-y-6 min-h-screen sticky top-0 h-screen">
+    <aside className="hidden 2xl:flex 2xl:w-80 bg-white dark:bg-[#0e172e] border-l border-slate-100 dark:border-slate-800 p-6 flex-col justify-between shrink-0 space-y-6 min-h-screen sticky top-0 h-screen transition-colors">
       <div className="space-y-5">
         
         {/* Header */}
         <div className="flex items-center justify-between">
           <button
             type="button"
-            className="w-7 h-7 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-400"
+            className="w-7 h-7 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center text-slate-400"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
 
-          <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
+          <h3 className="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">
             Minggu Ini
           </h3>
 
           <button
             type="button"
-            className="w-7 h-7 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-400"
+            className="w-7 h-7 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center text-slate-400"
           >
             <ChevronRight className="w-4 h-4" />
           </button>
@@ -74,19 +75,19 @@ export const WeeklyForecastSidebar: React.FC<WeeklyForecastSidebarProps> = ({
             return (
               <div
                 key={i}
-                className={`py-2.5 px-1 rounded-2xl flex flex-col items-center justify-between text-center ${
+                className={`py-2.5 px-1 rounded-2xl flex flex-col items-center justify-between text-center transition-colors ${
                   slot.isNow
                     ? 'bg-blue-600 text-white shadow-xs'
-                    : 'bg-slate-50 text-slate-700'
+                    : 'bg-slate-50 dark:bg-[#152238] text-slate-700 dark:text-slate-300 border border-transparent dark:border-slate-750'
                 }`}
               >
-                <span className={`text-[10px] font-medium block ${slot.isNow ? 'text-blue-100' : 'text-slate-400'}`}>
+                <span className={`text-[10px] font-medium block ${slot.isNow ? 'text-blue-100' : 'text-slate-400 dark:text-slate-500'}`}>
                   {slot.time}
                 </span>
                 <div className="my-1">
                   <Icon className={`w-3.5 h-3.5 ${slot.isNow ? 'text-white' : 'text-amber-500'}`} />
                 </div>
-                <span className="text-xs font-bold block">
+                <span className="text-xs font-bold block dark:text-slate-200">
                   {slot.skor}
                 </span>
               </div>
@@ -99,22 +100,22 @@ export const WeeklyForecastSidebar: React.FC<WeeklyForecastSidebarProps> = ({
           {proyeksi.map((item) => (
             <div
               key={item.hari}
-              className="flex items-center justify-between py-1 px-1 hover:bg-slate-50 rounded-xl text-xs"
+              className="flex items-center justify-between py-1 px-2 hover:bg-slate-50 dark:hover:bg-[#152238]/60 rounded-xl text-xs transition-colors"
             >
               <div>
-                <span className="font-bold text-slate-800 block">
+                <span className="font-bold text-slate-800 dark:text-slate-200 block">
                   {item.label_hari.split(' ')[1]?.replace('(', '').replace(')', '') || item.label_hari}
                 </span>
-                <span className="text-[10px] text-slate-400 block font-medium">
+                <span className="text-[10px] text-slate-400 dark:text-slate-500 block font-medium">
                   {item.tanggal}
                 </span>
               </div>
 
               <div className="flex items-center gap-2.5">
-                <span className="text-xs font-bold text-slate-900">
+                <span className="text-xs font-bold text-slate-900 dark:text-white">
                   {item.skor}
                 </span>
-                <div className="w-6 h-6 rounded-full bg-slate-50 flex items-center justify-center">
+                <div className="w-6 h-6 rounded-full bg-slate-50 dark:bg-[#152238] flex items-center justify-center">
                   {getRiskIcon(item.kategori)}
                 </div>
               </div>
@@ -124,15 +125,15 @@ export const WeeklyForecastSidebar: React.FC<WeeklyForecastSidebarProps> = ({
 
       </div>
 
-      {/* Quick PLTB Button */}
+      {/* Quick Smoke Forecast Button */}
       {onOpenPLTB && (
         <button
           type="button"
           onClick={onOpenPLTB}
-          className="w-full py-2.5 px-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold transition-colors cursor-pointer flex items-center justify-center gap-1.5 border border-emerald-200/80"
+          className="w-full py-2.5 px-3 rounded-xl bg-sky-50 hover:bg-sky-100 dark:bg-sky-950/40 dark:hover:bg-sky-900/40 text-sky-800 dark:text-sky-300 text-xs font-bold transition-colors cursor-pointer flex items-center justify-center gap-1.5 border border-sky-200/80 dark:border-sky-800/60"
         >
-          <Sprout className="w-3.5 h-3.5 text-emerald-600" />
-          <span>Solusi PLTB Petani &rarr;</span>
+          <CloudFog className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400" />
+          <span>Prediksi Kabut Asap &rarr;</span>
         </button>
       )}
 

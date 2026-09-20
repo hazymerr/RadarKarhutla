@@ -1,1 +1,282 @@
 @import "tailwindcss";
+
+@variant dark (&:where(.dark, .dark *));
+
+/* Leaflet map custom aesthetics */
+.leaflet-container {
+  font-family: inherit;
+  z-index: 10;
+  outline: none;
+}
+
+.leaflet-popup-content-wrapper {
+  background: rgba(255, 255, 255, 0.98) !important;
+  backdrop-filter: blur(12px);
+  color: #0f172a !important;
+  border-radius: 1rem !important;
+  border: 1px solid rgba(226, 232, 240, 0.9) !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+  padding: 0 !important;
+}
+
+.leaflet-popup-content {
+  margin: 0.85rem 1.1rem !important;
+  line-height: 1.4 !important;
+  color: #0f172a !important;
+}
+
+.leaflet-popup-tip {
+  background: rgba(255, 255, 255, 0.98) !important;
+  border: 1px solid rgba(226, 232, 240, 0.9) !important;
+  box-shadow: none !important;
+}
+
+.leaflet-popup-close-button {
+  color: #64748b !important;
+  padding: 8px 10px !important;
+}
+
+.leaflet-popup-close-button:hover {
+  color: #0f172a !important;
+}
+
+/* Radar pulse keyframes */
+@keyframes radar-pulse {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+
+.animate-radar-pulse {
+  animation: radar-pulse 2.2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes flame-pulse {
+  0%, 100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 6px rgba(239, 68, 68, 0.8));
+  }
+  50% {
+    transform: scale(1.15);
+    filter: drop-shadow(0 0 14px rgba(249, 115, 22, 1));
+  }
+}
+
+.animate-flame-pulse {
+  animation: flame-pulse 1.6s ease-in-out infinite;
+}
+
+/* ==========================================================================
+   ELEGANT SOFT DARK MODE (Midnight Slate Theme - Nyaman & Tidak Terlalu Gelap)
+   White mode remains 100% untouched when .dark class is not present.
+   ========================================================================== */
+
+.dark {
+  color-scheme: dark;
+}
+
+/* Background app & general surface */
+.dark body {
+  background-color: #0b1329 !important;
+  color: #f1f5f9 !important;
+}
+
+.dark .min-h-screen.bg-\[\#f8fafc\] {
+  background-color: #0b1329 !important;
+  color: #f1f5f9 !important;
+}
+
+/* Sidebars & Top Navigation: Sleek dark navy container */
+.dark aside,
+.dark header {
+  background-color: #0e172e !important;
+  border-color: rgba(51, 65, 85, 0.5) !important;
+}
+
+/* Card surfaces: Elevated Slate Navy (Consistent across all cards) */
+.dark .bg-white {
+  background-color: #152238 !important;
+  color: #f1f5f9 !important;
+}
+
+.dark .bg-white\/90,
+.dark .bg-white\/95,
+.dark .bg-white\/80 {
+  background-color: rgba(21, 34, 56, 0.94) !important;
+  color: #f1f5f9 !important;
+}
+
+/* Inner card sub-surfaces & chips */
+.dark .bg-slate-50,
+.dark .bg-slate-50\/40,
+.dark .bg-slate-50\/50,
+.dark .bg-slate-50\/60,
+.dark .bg-slate-50\/70,
+.dark .bg-slate-100,
+.dark .bg-slate-100\/70 {
+  background-color: #0d1629 !important;
+}
+
+.dark .hover\:bg-slate-50:hover,
+.dark .hover\:bg-slate-100:hover,
+.dark .hover\:bg-slate-100\/70:hover,
+.dark .hover\:bg-slate-200\/70:hover {
+  background-color: #1a2942 !important;
+}
+
+/* Borders in Dark Mode */
+.dark .border-slate-100,
+.dark .border-slate-200,
+.dark .border-slate-200\/60,
+.dark .border-slate-200\/70,
+.dark .border-slate-200\/80,
+.dark .border-slate-200\/90,
+.dark .border-slate-300 {
+  border-color: rgba(71, 85, 105, 0.45) !important;
+}
+
+/* Typography in Dark Mode */
+.dark .text-slate-900,
+.dark .text-slate-800 {
+  color: #f8fafc !important;
+}
+
+.dark .text-slate-700,
+.dark .text-slate-600 {
+  color: #cbd5e1 !important;
+}
+
+.dark .text-slate-500 {
+  color: #94a3b8 !important;
+}
+
+.dark .text-slate-400 {
+  color: #64748b !important;
+}
+
+/* Inputs, Textareas, Selects */
+.dark input:not([type="checkbox"]):not([type="radio"]),
+.dark textarea,
+.dark select {
+  background-color: #0f1828 !important;
+  border-color: rgba(71, 85, 105, 0.6) !important;
+  color: #f8fafc !important;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #64748b !important;
+}
+
+/* Tinted Alert & Notification Cards (Warm glowing tones with deep base) */
+.dark .bg-blue-50,
+.dark .bg-blue-50\/40,
+.dark .bg-blue-50\/60,
+.dark .bg-blue-50\/70,
+.dark .bg-blue-50\/80,
+.dark .bg-blue-50\/90 {
+  background-color: rgba(30, 58, 138, 0.3) !important;
+  border-color: rgba(59, 130, 246, 0.35) !important;
+  color: #93c5fd !important;
+}
+
+.dark .bg-red-50,
+.dark .bg-red-50\/60,
+.dark .bg-red-50\/80,
+.dark .bg-red-50\/90 {
+  background-color: rgba(153, 27, 27, 0.28) !important;
+  border-color: rgba(239, 68, 68, 0.35) !important;
+  color: #fca5a5 !important;
+}
+
+.dark .bg-amber-50,
+.dark .bg-amber-50\/60,
+.dark .bg-amber-50\/80,
+.dark .bg-amber-50\/90 {
+  background-color: rgba(180, 83, 9, 0.28) !important;
+  border-color: rgba(245, 158, 11, 0.35) !important;
+  color: #fde68a !important;
+}
+
+.dark .bg-orange-50,
+.dark .bg-orange-50\/60,
+.dark .bg-orange-50\/80,
+.dark .bg-orange-50\/90 {
+  background-color: rgba(194, 65, 12, 0.28) !important;
+  border-color: rgba(249, 115, 22, 0.35) !important;
+  color: #fed7aa !important;
+}
+
+.dark .bg-emerald-50,
+.dark .bg-emerald-50\/60,
+.dark .bg-emerald-50\/70,
+.dark .bg-emerald-50\/80,
+.dark .bg-emerald-50\/90 {
+  background-color: rgba(6, 78, 59, 0.3) !important;
+  border-color: rgba(16, 185, 129, 0.35) !important;
+  color: #a7f3d0 !important;
+}
+
+.dark .bg-rose-50,
+.dark .bg-rose-50\/60,
+.dark .bg-rose-50\/90 {
+  background-color: rgba(159, 18, 57, 0.28) !important;
+  border-color: rgba(244, 63, 94, 0.35) !important;
+  color: #fecdd3 !important;
+}
+
+.dark .bg-sky-50,
+.dark .bg-sky-50\/60 {
+  background-color: rgba(12, 74, 110, 0.3) !important;
+  border-color: rgba(14, 165, 233, 0.35) !important;
+  color: #bae6fd !important;
+}
+
+/* Dark mode Leaflet Popups */
+.dark .leaflet-popup-content-wrapper {
+  background: rgba(22, 34, 56, 0.96) !important;
+  border: 1px solid rgba(71, 85, 105, 0.7) !important;
+  color: #f8fafc !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.6) !important;
+}
+
+.dark .leaflet-popup-content {
+  color: #f8fafc !important;
+}
+
+.dark .leaflet-popup-tip {
+  background: rgba(22, 34, 56, 0.96) !important;
+  border: 1px solid rgba(71, 85, 105, 0.7) !important;
+}
+
+.dark .leaflet-popup-close-button {
+  color: #94a3b8 !important;
+}
+
+.dark .leaflet-popup-close-button:hover {
+  color: #f8fafc !important;
+}
+
+/* Custom scrollbar for dark mode */
+.dark ::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #0d1527;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #1e2b44;
+  border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #2a3c5d;
+}

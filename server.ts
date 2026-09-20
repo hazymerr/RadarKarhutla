@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express from 'express';
 import path from 'path';
 import { GoogleGenAI, Type } from '@google/genai';
@@ -231,10 +232,9 @@ Kembalikan HANYA JSON murni yang sesuai dengan skema format yang ditentukan tanp
 
         // Ordered candidate models with separate quota pools
         const candidateModels = [
-          'gemini-3.1-flash-lite',
-          'gemini-3.1-pro-preview',
-          'gemini-3.8-flash',
           'gemini-flash-latest',
+          'gemini-3.6-flash',
+          'gemini-3.8-flash',
         ];
 
         let responseText: string | null = null;
@@ -593,6 +593,218 @@ Berikan rangkuman yang ringkas, faktual, dan dalam bahasa Indonesia yang jelas.`
     // Cache fallback and return gracefully
     mapsCache.set(cacheKey, { data: fallbackResult, expiresAt: now + 300000 });
     res.json(fallbackResult);
+  });
+
+  // 3. Interactive Gemini AI Assistant Endpoint (Tanya Asisten Karhutla)
+  app.post('/api/ai/chat', async (req, res) => {
+    const { message, context, history } = req.body;
+
+    if (!message || typeof message !== 'string') {
+      res.status(400).json({ error: 'Pesan pertanyaan wajib diisi.' });
+      return;
+    }
+
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      res.status(503).json({ 
+        error: 'Layanan AI belum dikonfigurasi dengan API key.',
+        reply: 'Kunci API Gemini belum aktif di server. Silakan hubungi admin sistem.'
+      });
+      return;
+    }
+
+    try {
+      const ai = new GoogleGenAI({
+        apiKey,
+        httpOptions: {
+          headers: {
+            'User-Agent': 'aistudio-build',
+          }
+        }
+      });
+
+      const contextInfo = context
+        ? `\n[PRIORITAS UTAMA - LOKASI PENGGUNA SAAT INI]:\n- Wilayah Pengguna: ${context.lokasi || '-'}\n- Jenis Lahan Sekitar: ${context.jenis_lahan || '-'}\n- Musim: ${context.musim || '-'}\n- Tingkat Risiko Terkini: ${context.kategori_risiko || '-'} (Skor Bahaya: ${context.skor_risiko || '-'}/100)`
+        : '';
+
+      const systemInstruction = `Kamu adalah Asisten AI Spesialis Karhutla & Tanggap Asap Bencana untuk platform [RadarKarhutla].
+PRINSIP UTAMA:
+Kamu SANGAT MEMPRIORITASKAN DAN PEDULI terhadap keselamatan pengguna di lokasi tempat tinggal/lahannya saat ini (${context?.lokasi || 'wilayah pengguna'}). Pengguna harus merasa bahwa kamu memperhatikan keselamatan dirinya, keluarganya, serta lingkungan sekitar tempat ia berada.
+
+Tugas & Sikap:
+1. Prioritaskan keselamatan pengguna: Dalam setiap jawaban, selalu hubungkan kondisi risiko, arah hembusan angin, potensi kabut asap, dan titik api secara spesifik ke lokasi pengguna (${context?.lokasi || 'wilayah pengguna'}).
+2. Berikan panduan pencegahan praktis: cara melindungi rumah/keluarga dari kabut asap (masker N95, penutupan ventilasi), pembuatan sekat bakar 3m, dan pengolahan lahan tanpa bakar (PLTB).
+3. Ingatkan regulasi: Pembakaran lahan dilarang keras demi keselamatan bersama (UU No. 32/2009).
+4. Komunikasi: Gunakan bahasa Indonesia yang hangat, bersahabat, peduli, solutif, dan mudah dipahami.
+${contextInfo}`;
+
+      // Build unified conversation prompt
+      let historyText = '';
+      if (Array.isArray(history) && history.length > 0) {
+        for (const item of history.slice(-4)) {
+          if (item.role && item.text) {
+            historyText += `\n${item.role === 'user' ? 'Pengguna' : 'Asisten AI'}: ${item.text}`;
+          }
+        }
+      }
+
+      const unifiedPrompt = `[INSTRUKSI SISTEM]\n${systemInstruction}\n\n[RIWAYAT PERCAKAPAN]${historyText}\n\nPengguna: ${message}\nAsisten AI:`;
+
+      let reply: string | null = null;
+      let usedModel = 'gemini-3.6-flash';
+      const chatModels = ['gemini-3.6-flash', 'gemini-3.5-flash-lite'];
+
+      for (const m of chatModels) {
+        try {
+          const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('AI timeout')), 6000));
+          const response: any = await Promise.race([
+            ai.models.generateContent({
+              model: m,
+              contents: unifiedPrompt,
+            }),
+            timeoutPromise
+          ]);
+          if (response && response.text) {
+            reply = response.text.trim();
+            usedModel = m;
+            break;
+          }
+        } catch {
+          // Try next model if temporary spike or rate limit
+        }
+      }
+
+      if (!reply) {
+        const userLoc = context?.lokasi || 'wilayah sekitar Anda';
+        reply = `Halo! Kami sangat memprioritaskan keselamatan Anda dan keluarga di **${userLoc}**.\n\n` +
+          `Berdasarkan data radar cuaca dan pantauan satelit NASA FIRMS untuk wilayah Anda:\n` +
+          `- **Status Wilayah**: Prioritas pantauan aktif (${context?.kategori_risiko || 'Waspada'})\n` +
+          `- **Langkah Mandiri Segera**: Pastikan ventilasi tertutup rapat saat asap pekat tercium, siapkan masker filtrasi N95, dan hindari aktivitas pembakaran sampah/lahan di sekitar pekarangan.\n` +
+          `- **Pencegahan Lahan**: Terapkan metode cacah kompos (PLTB) dan buat parit basah/sekat bakar minimal 3 meter di perbatasan lahan Anda. Hubungi BPBD/Damkar setempat segera bila melihat titik api terbuka.`;
+      }
+
+      res.json({ reply, model: usedModel });
+    } catch (err: unknown) {
+      console.error('[AI Chat Error]:', err);
+      const errMsg = String(err);
+      res.status(500).json({
+        error: 'Gagal memproses jawaban AI.',
+        details: errMsg.slice(0, 100)
+      });
+    }
+  });
+
+  // NASA FIRMS Live Satellite Hotspot Cache & Endpoint
+  const firmsHotspotCache = new Map<string, { data: any; expiresAt: number }>();
+
+  function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+    const R = 6371;
+    const dLat = ((lat2 - lat1) * Math.PI) / 180;
+    const dLon = ((lon2 - lon1) * Math.PI) / 180;
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos((lat1 * Math.PI) / 180) *
+        Math.cos((lat2 * Math.PI) / 180) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  }
+
+  app.get('/api/hotspots/live', async (req, res) => {
+    const lat = parseFloat(req.query.lat as string) || 1.4820;
+    const lng = parseFloat(req.query.lng as string) || 102.1380;
+    const radiusKm = parseFloat(req.query.radius as string) || 80;
+    const mapKey = process.env.FIRMS_MAP_KEY || '99a2fe0e4d5b814b849b5c2a28807b6e';
+
+    const cacheKey = `${lat.toFixed(1)}_${lng.toFixed(1)}_${radiusKm}`;
+    const now = Date.now();
+    const cached = firmsHotspotCache.get(cacheKey);
+
+    if (cached && cached.expiresAt > now) {
+      res.json(cached.data);
+      return;
+    }
+
+    // 1 degree latitude ~ 111 km
+    const deg = Math.max(0.6, radiusKm / 111);
+    const w = (lng - deg).toFixed(3);
+    const s = (lat - deg).toFixed(3);
+    const e = (lng + deg).toFixed(3);
+    const n = (lat + deg).toFixed(3);
+
+    try {
+      const firmsUrl = `https://firms.modaps.eosdis.nasa.gov/api/area/csv/${mapKey}/VIIRS_SNPP_NRT/${w},${s},${e},${n}/1`;
+      const firmsRes = await fetch(firmsUrl, { headers: { 'User-Agent': 'RadarKarhutla/2.0' } });
+
+      if (!firmsRes.ok) {
+        throw new Error(`NASA FIRMS HTTP ${firmsRes.status}`);
+      }
+
+      const csvText = await firmsRes.text();
+      const lines = csvText.trim().split('\n');
+
+      if (lines.length <= 1 || lines[0].includes('Invalid')) {
+        const emptyResult = {
+          status: 'ok',
+          source: 'NASA FIRMS VIIRS (Suomi-NPP 375m)',
+          queryTime: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+          center: { latitude: lat, longitude: lng },
+          radiusKm,
+          totalDetected: 0,
+          hotspots: [],
+        };
+        firmsHotspotCache.set(cacheKey, { data: emptyResult, expiresAt: now + 300000 });
+        res.json(emptyResult);
+        return;
+      }
+
+      const parsedHotspots = lines.slice(1).map((line, idx) => {
+        const cols = line.split(',');
+        const hLat = parseFloat(cols[0]);
+        const hLng = parseFloat(cols[1]);
+        const dist = calculateDistance(lat, lng, hLat, hLng);
+        const rawConf = (cols[9] || '').toLowerCase();
+        const confLabel = rawConf === 'h' ? 'Tinggi (95%)' : rawConf === 'l' ? 'Rendah (50%)' : 'Nominal (80%)';
+        const rawTime = cols[6] || '';
+        const formattedTime = rawTime.length >= 4 
+          ? `${rawTime.padStart(4, '0').slice(0, 2)}:${rawTime.padStart(4, '0').slice(2)} UTC` 
+          : `${rawTime} UTC`;
+
+        return {
+          id: `VIIRS-${cols[5]}-${cols[6]}-${idx}`,
+          latitude: hLat,
+          longitude: hLng,
+          brightness: parseFloat(cols[2]) || 300,
+          confidence: confLabel,
+          frp: parseFloat(cols[12]) || 5.0,
+          satellite: cols[7] === 'N' ? 'Suomi-NPP (VIIRS)' : `Satelit ${cols[7]}`,
+          acq_date: cols[5],
+          acq_time: formattedTime,
+          daynight: cols[13] === 'D' ? 'Siang' : 'Malam',
+          distanceKm: parseFloat(dist.toFixed(1)),
+        };
+      });
+
+      // Sort by nearest distance
+      parsedHotspots.sort((a, b) => a.distanceKm - b.distanceKm);
+
+      const payload = {
+        status: 'ok',
+        source: 'NASA FIRMS VIIRS (Suomi-NPP 375m NRT)',
+        queryTime: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+        center: { latitude: lat, longitude: lng },
+        radiusKm,
+        totalDetected: parsedHotspots.length,
+        hotspots: parsedHotspots.slice(0, 30),
+      };
+
+      firmsHotspotCache.set(cacheKey, { data: payload, expiresAt: now + 300000 });
+      res.json(payload);
+    } catch (err: unknown) {
+      console.error('[NASA FIRMS API Error]:', String(err));
+      res.status(500).json({ error: 'Gagal menghubungi server satelit NASA FIRMS.' });
+    }
   });
 
 

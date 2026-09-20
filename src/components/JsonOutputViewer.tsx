@@ -34,26 +34,26 @@ export const JsonOutputViewer: React.FC<JsonOutputViewerProps> = ({ hasil }) => 
   };
 
   return (
-    <div className="bg-white border border-stone-200 rounded-2xl overflow-hidden shadow-xs">
-      <div className="flex items-center justify-between px-5 py-3 bg-stone-50 border-b border-stone-200">
+    <div className="bg-white dark:bg-[#152238] border border-stone-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-xs transition-colors">
+      <div className="flex items-center justify-between px-5 py-3 bg-stone-50 dark:bg-[#0d1629] border-b border-stone-200 dark:border-slate-800">
         <button
           type="button"
           onClick={() => setIsExpanded(!isExpanded)}
-          className="flex items-center gap-2 text-xs font-bold text-stone-700 uppercase tracking-wider hover:text-stone-900 transition-colors cursor-pointer"
+          className="flex items-center gap-2 text-xs font-bold text-stone-700 dark:text-slate-300 uppercase tracking-wider hover:text-stone-900 dark:hover:text-white transition-colors cursor-pointer"
         >
-          <Code className="w-4 h-4 text-orange-600" />
+          <Code className="w-4 h-4 text-orange-600 dark:text-orange-400" />
           <span>Format Output JSON Resmi Sistem</span>
           {isExpanded ? (
-            <ChevronUp className="w-4 h-4 text-stone-500" />
+            <ChevronUp className="w-4 h-4 text-stone-500 dark:text-slate-400" />
           ) : (
-            <ChevronDown className="w-4 h-4 text-stone-500" />
+            <ChevronDown className="w-4 h-4 text-stone-500 dark:text-slate-400" />
           )}
         </button>
 
         <button
           type="button"
           onClick={handleCopy}
-          className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white hover:bg-stone-100 text-stone-700 text-xs font-semibold border border-stone-200 transition-colors cursor-pointer shadow-2xs"
+          className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white dark:bg-[#152238] hover:bg-stone-100 dark:hover:bg-slate-800 text-stone-700 dark:text-slate-200 text-xs font-semibold border border-stone-200 dark:border-slate-700 transition-colors cursor-pointer shadow-2xs"
         >
           {copied ? (
             <>
