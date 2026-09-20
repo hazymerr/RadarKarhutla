@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="50%" stop-color="#3b82f6" />
+      <stop offset="100%" stop-color="#6366f1" />
+    </linearGradient>
+    <linearGradient id="flameGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="60%" stop-color="#ffffff" />
+      <stop offset="100%" stop-color="#fed7aa" />
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000000" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <!-- Squircle rounded background matching RadarKarhutla brand -->
+  <rect width="64" height="64" rx="16" fill="url(#bgGrad)" />
+
+  <!-- Radar wave subtle circle -->
+  <circle cx="32" cy="35" r="23" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.35" />
+
+  <!-- Flame Icon matching app logo -->
+  <path d="M32 49c-8.28 0-15-6.72-15-15 0-6.15 3.72-11.42 9.17-13.62 1.08-.43 2.23.33 2.23 1.5v3.5c0 .8.55 1.48 1.33 1.63 3.35.63 5.83 3.52 5.83 6.98 0 1.02-.22 1.97-.6 2.83-.32.72.13 1.55.88 1.75.75.2 1.53-.2 1.78-.93.6-1.63.93-3.42.93-5.32 0-3.83-1.73-7.3-4.48-9.62-.63-.53-.7-1.47-.17-2.1.53-.63 1.47-.7 2.1-.17 3.95 3.32 6.47 8.28 6.47 13.87 0 8.28-6.72 15-15 15z" 
+        fill="url(#flameGrad)" 
+        filter="url(#glow)" />
+</svg>

@@ -26,12 +26,12 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload }) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     return (
-      <div className="bg-white/95 backdrop-blur-sm p-3 rounded-xl border border-slate-200 shadow-md text-xs space-y-1">
-        <div className="font-bold text-slate-800 flex justify-between gap-3">
+      <div className="bg-white/95 dark:bg-[#0e172e]/95 backdrop-blur-sm p-3 rounded-xl border border-slate-200 dark:border-slate-700 shadow-md text-xs space-y-1">
+        <div className="font-bold text-slate-800 dark:text-white flex justify-between gap-3">
           <span>{data.label_hari}</span>
-          <span className="text-blue-600 font-bold">{data.skor}/100</span>
+          <span className="text-blue-600 dark:text-blue-400 font-bold">{data.skor}/100</span>
         </div>
-        <div className="text-[11px] text-slate-500">{data.kategori} &bull; {data.kondisi}</div>
+        <div className="text-[11px] text-slate-500 dark:text-slate-400">{data.kategori} &bull; {data.kondisi}</div>
       </div>
     );
   }
@@ -49,15 +49,15 @@ export const RiskTrendChart: React.FC<RiskTrendChartProps> = ({
   const maxScore = Math.max(...proyeksi.map((p) => p.skor), skorSaatIni);
 
   return (
-    <div className="bg-white border border-slate-100 rounded-2xl sm:rounded-3xl p-3.5 sm:p-6 shadow-xs space-y-3 sm:space-y-4">
+    <div className="bg-white dark:bg-[#152238] border border-slate-100 dark:border-slate-700/50 rounded-2xl sm:rounded-3xl p-3.5 sm:p-6 shadow-xs space-y-3 sm:space-y-4 transition-colors">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-orange-50 flex items-center justify-center text-orange-600 shrink-0">
+          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-orange-50 dark:bg-orange-950/40 flex items-center justify-center text-orange-600 dark:text-orange-400 shrink-0">
             <TrendingUp className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </div>
           <div>
-            <h3 className="text-xs sm:text-sm font-bold text-slate-900">
+            <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
               Tren Risiko 7 Hari
             </h3>
             <span className="text-[10px] sm:text-[11px] text-slate-400">Proyeksi harian</span>
@@ -66,7 +66,7 @@ export const RiskTrendChart: React.FC<RiskTrendChartProps> = ({
 
         <div className="flex items-center gap-1 text-xs">
           <span className="text-slate-400 font-medium hidden sm:inline">Puncak:</span>
-          <span className="px-2 py-0.5 rounded-md font-bold text-[11px] sm:text-xs bg-red-50 text-red-700 border border-red-200">
+          <span className="px-2 py-0.5 rounded-md font-bold text-[11px] sm:text-xs bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800/50">
             {maxScore}/100
           </span>
         </div>
@@ -78,11 +78,11 @@ export const RiskTrendChart: React.FC<RiskTrendChartProps> = ({
           <AreaChart data={proyeksi} margin={{ top: 8, right: 8, left: -28, bottom: 0 }}>
             <defs>
               <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#f97316" stopOpacity={0.25} />
+                <stop offset="5%" stopColor="#f97316" stopOpacity={0.3} />
                 <stop offset="95%" stopColor="#f97316" stopOpacity={0.0} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(148, 163, 184, 0.18)" />
             <XAxis
               dataKey="tanggal"
               tickLine={false}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { MapPin, Wind, Droplets, Flame, Sparkles } from 'lucide-react';
+import { MapPin, Wind, Droplets, Flame } from 'lucide-react';
 import { HasilAnalisis, FormInput } from '../types.ts';
 
 interface HeroRiskCardProps {
@@ -13,13 +13,13 @@ export const HeroRiskCard: React.FC<HeroRiskCardProps> = ({ hasil, formData }) =
   const getGradientStyle = () => {
     switch (kategori_risiko) {
       case 'SANGAT TINGGI':
-        return 'from-red-100/90 via-orange-50 to-rose-50 text-red-950 border-red-200/80';
+        return 'from-red-100/90 via-orange-50 to-rose-50 text-red-950 border-red-200/80 dark:from-slate-800 dark:via-[#1e293b] dark:to-red-950/30 dark:text-slate-100 dark:border-red-500/30';
       case 'TINGGI':
-        return 'from-amber-100/90 via-orange-50 to-amber-50 text-orange-950 border-orange-200/80';
+        return 'from-amber-100/90 via-orange-50 to-amber-50 text-orange-950 border-orange-200/80 dark:from-slate-800 dark:via-[#1e293b] dark:to-amber-950/30 dark:text-slate-100 dark:border-amber-500/30';
       case 'SEDANG':
-        return 'from-sky-100 via-blue-50 to-indigo-50/70 text-slate-900 border-sky-200/80';
+        return 'from-sky-100 via-blue-50 to-indigo-50/70 text-slate-900 border-sky-200/80 dark:from-slate-800 dark:via-[#1e293b] dark:to-blue-950/30 dark:text-slate-100 dark:border-blue-500/30';
       default:
-        return 'from-blue-100/90 via-sky-50 to-emerald-50/60 text-slate-900 border-blue-200/80';
+        return 'from-blue-100/90 via-sky-50 to-emerald-50/60 text-slate-900 border-blue-200/80 dark:from-slate-800 dark:via-[#1e293b] dark:to-emerald-950/30 dark:text-slate-100 dark:border-emerald-500/30';
     }
   };
 
@@ -31,19 +31,19 @@ export const HeroRiskCard: React.FC<HeroRiskCardProps> = ({ hasil, formData }) =
   ];
 
   return (
-    <div className={`p-4 sm:p-7 rounded-2xl sm:rounded-3xl bg-gradient-to-r ${getGradientStyle()} border shadow-xs relative overflow-hidden`}>
-      <div className="absolute top-0 right-1/3 w-64 h-64 bg-white/40 rounded-full blur-3xl pointer-events-none" />
+    <div className={`p-4 sm:p-7 rounded-2xl sm:rounded-3xl bg-gradient-to-r ${getGradientStyle()} border shadow-xs relative overflow-hidden transition-colors`}>
+      <div className="absolute top-0 right-1/3 w-64 h-64 bg-white/40 dark:bg-orange-500/10 rounded-full blur-3xl pointer-events-none" />
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-8 items-center relative z-10">
         
         {/* Left Section */}
         <div className="lg:col-span-7 space-y-3 sm:space-y-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5 text-slate-800 font-bold text-xs sm:text-sm">
-              <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-600 shrink-0" />
+            <div className="flex items-center gap-1.5 text-slate-800 dark:text-slate-200 font-bold text-xs sm:text-sm">
+              <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-600 dark:text-blue-400 shrink-0" />
               <span className="truncate">{formData.lokasi}</span>
             </div>
-            <span className="text-[11px] font-semibold text-slate-500">
+            <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
               Hari Ini
             </span>
           </div>
@@ -51,51 +51,51 @@ export const HeroRiskCard: React.FC<HeroRiskCardProps> = ({ hasil, formData }) =
           {/* Main Number + Category status */}
           <div className="py-0.5">
             <div className="flex items-baseline gap-2">
-              <span className="text-5xl sm:text-7xl font-light tracking-tight text-slate-900">
+              <span className="text-5xl sm:text-7xl font-light tracking-tight text-slate-900 dark:text-white">
                 {skor_risiko}
               </span>
-              <span className="text-xl sm:text-2xl font-light text-slate-400">
+              <span className="text-xl sm:text-2xl font-light text-slate-400 dark:text-slate-500">
                 /100
               </span>
             </div>
             <div className="flex items-center gap-2 mt-1">
-              <span className="text-sm sm:text-base font-bold text-slate-900">
+              <span className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
                 Risiko {kategori_risiko}
               </span>
               <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
-              <span className="text-xs sm:text-sm text-slate-600 font-medium capitalize">
+              <span className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-medium capitalize">
                 &bull; Lahan {formData.jenis_lahan}
               </span>
             </div>
           </div>
 
           {/* Clean concise pills: generous spacing */}
-          <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 text-xs text-slate-700 pt-1">
-            <div className="flex items-center gap-1.5 bg-white/80 backdrop-blur-sm px-3 py-1.5 rounded-full border border-white/90 shadow-2xs" title="Curah Hujan">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 text-xs text-slate-700 dark:text-slate-300 pt-1">
+            <div className="flex items-center gap-1.5 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm px-3 py-1.5 rounded-full border border-white/90 dark:border-slate-700/60 shadow-2xs" title="Curah Hujan">
               <Droplets className="w-3.5 h-3.5 text-blue-500 shrink-0" />
-              <span className="text-slate-500">Hujan:</span>
-              <span className="font-semibold capitalize">{formData.curah_hujan.replace('_', ' ')}</span>
+              <span className="text-slate-500 dark:text-slate-400">Hujan:</span>
+              <span className="font-semibold capitalize text-slate-800 dark:text-slate-200">{formData.curah_hujan.replace('_', ' ')}</span>
             </div>
 
-            <div className="flex items-center gap-1.5 bg-white/80 backdrop-blur-sm px-3 py-1.5 rounded-full border border-white/90 shadow-2xs" title="Kecepatan Angin">
-              <Wind className="w-3.5 h-3.5 text-cyan-600 shrink-0" />
-              <span className="text-slate-500">Angin:</span>
-              <span className="font-semibold capitalize">{formData.kecepatan_angin}</span>
+            <div className="flex items-center gap-1.5 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm px-3 py-1.5 rounded-full border border-white/90 dark:border-slate-700/60 shadow-2xs" title="Kecepatan Angin">
+              <Wind className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400 shrink-0" />
+              <span className="text-slate-500 dark:text-slate-400">Angin:</span>
+              <span className="font-semibold capitalize text-slate-800 dark:text-slate-200">{formData.kecepatan_angin}</span>
             </div>
 
-            <div className="flex items-center gap-1.5 bg-white/80 backdrop-blur-sm px-3 py-1.5 rounded-full border border-white/90 shadow-2xs" title="Titik Panas Hotspot 10km">
+            <div className="flex items-center gap-1.5 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm px-3 py-1.5 rounded-full border border-white/90 dark:border-slate-700/60 shadow-2xs" title="Titik Panas Hotspot 10km">
               <Flame className="w-3.5 h-3.5 text-orange-500 shrink-0" />
-              <span className="font-semibold">{formData.histori_titik_panas_10km}</span>
-              <span className="text-slate-500">Hotspot</span>
+              <span className="font-semibold text-slate-800 dark:text-slate-200">{formData.histori_titik_panas_10km}</span>
+              <span className="text-slate-500 dark:text-slate-400">Hotspot</span>
             </div>
           </div>
         </div>
 
         {/* Right Section: Mini Fluctuation Sparkline */}
-        <div className="lg:col-span-5 bg-white/60 backdrop-blur-md p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-white/90 shadow-2xs space-y-2 sm:space-y-3">
-          <div className="flex items-center justify-between text-xs text-slate-700 font-semibold">
+        <div className="lg:col-span-5 bg-white/60 dark:bg-slate-900/80 backdrop-blur-md p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-white/90 dark:border-slate-700/60 shadow-2xs space-y-2 sm:space-y-3">
+          <div className="flex items-center justify-between text-xs text-slate-700 dark:text-slate-300 font-semibold">
             <span>Fluktuasi 24 Jam</span>
-            <span className="text-[11px] text-slate-400 font-normal">Puncak 13:00</span>
+            <span className="text-[11px] text-slate-400 dark:text-slate-500 font-normal">Puncak 13:00</span>
           </div>
 
           {/* Curved SVG Sparkline */}
@@ -123,13 +123,13 @@ export const HeroRiskCard: React.FC<HeroRiskCardProps> = ({ hasil, formData }) =
           </div>
 
           {/* 4 intervals */}
-          <div className="grid grid-cols-4 gap-2 text-center pt-1.5 border-t border-white/80">
+          <div className="grid grid-cols-4 gap-2 text-center pt-1.5 border-t border-slate-200/60 dark:border-slate-800">
             {dailyTimeline.map((item, idx) => (
               <div key={idx}>
-                <span className="text-[10px] sm:text-[11px] text-slate-400 block font-medium">
+                <span className="text-[10px] sm:text-[11px] text-slate-400 dark:text-slate-500 block font-medium">
                   {item.label}
                 </span>
-                <span className="text-xs sm:text-sm font-bold text-slate-800 block">
+                <span className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 block">
                   {item.skor}
                 </span>
               </div>

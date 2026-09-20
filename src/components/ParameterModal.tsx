@@ -1,7 +1,7 @@
 import React from 'react';
 import { FormInput } from '../types.ts';
 import { RiskAnalysisForm } from './RiskAnalysisForm.tsx';
-import { X, SlidersHorizontal, Sparkles } from 'lucide-react';
+import { X, SlidersHorizontal } from 'lucide-react';
 
 interface ParameterModalProps {
   isOpen: boolean;
@@ -23,23 +23,23 @@ export const ParameterModal: React.FC<ParameterModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/40 backdrop-blur-sm animate-fadeIn">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-sm animate-fadeIn">
       <div 
-        className="bg-white border border-slate-200 rounded-2xl sm:rounded-3xl w-full max-w-xl max-h-[92vh] overflow-y-auto shadow-2xl p-4 sm:p-6 relative space-y-3 sm:space-y-4"
+        className="bg-white dark:bg-[#0e172e] border border-slate-200/90 dark:border-slate-800 rounded-2xl sm:rounded-3xl w-full max-w-2xl max-h-[92vh] overflow-y-auto shadow-2xl p-5 sm:p-7 relative space-y-5 text-slate-800 dark:text-slate-100 transition-colors"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
-        <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 sm:pb-3">
-          <div className="flex items-center gap-2 min-w-0">
-            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
-              <SlidersHorizontal className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border border-blue-100/80 dark:border-blue-900/40 flex items-center justify-center shrink-0">
+              <SlidersHorizontal className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
             <div className="min-w-0">
-              <h3 className="text-sm sm:text-base font-bold text-slate-800 truncate">
-                Sesuaikan Parameter Lahan
+              <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white truncate">
+                Sesuaikan Parameter Lapangan
               </h3>
-              <p className="text-[11px] sm:text-xs text-slate-400 truncate">
-                Kondisi cuaca, lahan gambut & vegetasi
+              <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                Konfigurasi cuaca mikro, kondisi gambut, dan kapasitas lahan
               </p>
             </div>
           </div>
@@ -47,13 +47,14 @@ export const ParameterModal: React.FC<ParameterModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="w-7 h-7 sm:w-8 sm:h-8 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-700 flex items-center justify-center transition-colors cursor-pointer shrink-0"
+            aria-label="Tutup"
+            className="w-8 h-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 flex items-center justify-center transition-colors cursor-pointer shrink-0"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Reusable Form */}
+        {/* Spacious, uncrowded Form */}
         <RiskAnalysisForm
           formData={formData}
           onChange={onChange}
@@ -62,6 +63,7 @@ export const ParameterModal: React.FC<ParameterModalProps> = ({
             onClose();
           }}
           isLoading={isLoading}
+          isModal={true}
         />
       </div>
     </div>
